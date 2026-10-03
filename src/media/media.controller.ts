@@ -41,7 +41,7 @@ export class MediaController {
   async upload(@UploadedFile() file: UploadedImage | undefined, @Req() req: Request) {
     if (!file) throw new BadRequestException('No file uploaded (field name: "file")');
     const saved = await this.media.create(file);
-    const base = process.env.PUBLIC_API_URL ?? `${req.protocol}://${req.get('host')}/api`;
+    const base = (process.env.PUBLIC_API_URL ?? `${req.protocol}://${req.get('host')}/api`).replace(/\/$/, '');
     return { ...saved, url: `${base}/media/${saved.id}` };
   }
 

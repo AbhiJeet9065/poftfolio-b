@@ -1,9 +1,12 @@
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module.js';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  // Behind Render's proxy: trust X-Forwarded-* so req.protocol is https (uploaded-file links must be https).
+  app.set('trust proxy', 1);
   // FRONTEND_ORIGIN: comma-separated allowed origins. An entry may contain `*` as a wildcard for
   // one hostname label chunk, e.g. https://poftfolio-*-abhijeet-khans-projects.vercel.app to allow
   // every Vercel preview deployment of the project.
