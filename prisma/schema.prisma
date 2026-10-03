@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Profile {
+  id         String   @id @default(cuid())
+  name       String
+  headline   String
+  bio        String
+  photoUrl   String?
+  aboutPhotoUrl String?
+  location   String
+  openToWork Boolean  @default(true)
+  resumeUrl  String?
+  linkedin   String?
+  github     String?
+  email      String?
+  updatedAt  DateTime @updatedAt
+}
+
+model Stat {
+  id    String @id @default(cuid())
+  label String
+  value String
+  order Int    @default(0)
+}
+
+model Experience {
+  id         String    @id @default(cuid())
+  company    String
+  companyUrl String?
+  role       String
+  startDate  DateTime
+  endDate    DateTime?
+  bullets    String[]
+  order      Int       @default(0)
+}
+
+model Skill {
+  id       String  @id @default(cuid())
+  name     String
+  category String
+  logoUrl  String?
+  visible  Boolean @default(true)
+  order    Int     @default(0)
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  coverImage  String
+  gallery     String[]
+  techTags    String[]
+  summary     String
+  caseStudy   String
+  liveUrl     String?
+  githubUrl   String?
+  featured    Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
+
+// Uploaded images live in Postgres (Neon) as bytes; Project.coverImage stores
+// the public URL that serves them (GET /api/media/:id).
+model Media {
+  id        String   @id @default(cuid())
+  filename  String
+  mimeType  String
+  size      Int
+  data      Bytes
+  createdAt DateTime @default(now())
+}
+
+// One row per anonymous browser (random id from localStorage, stored as a SHA-256 hash).
+model Visitor {
+  id        String   @id
+  visits    Int      @default(1)
+  firstSeen DateTime @default(now())
+  lastSeen  DateTime @default(now())
+}
