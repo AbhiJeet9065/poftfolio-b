@@ -41,7 +41,9 @@ export class MediaController {
   async upload(@UploadedFile() file: UploadedImage | undefined, @Req() req: Request) {
     if (!file) throw new BadRequestException('No file uploaded (field name: "file")');
     const saved = await this.media.create(file);
-    const base = (process.env.PUBLIC_API_URL ?? `${req.protocol}://${req.get('host')}/api`).replace(/\/$/, '');
+    // Production is always https (Render terminates TLS at its proxy, so req.protocol can read "http").
+    const proto = process.env.NODE_ENV === 'production' ? 'https' : req.protocol;
+    const base = (process.env.PUBLIC_API_URL ?? `${proto}://${req.get('host')}/api`).replace(/\/$/, '');
     return { ...saved, url: `${base}/media/${saved.id}` };
   }
 
